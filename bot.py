@@ -42,6 +42,13 @@ async def process_start_command(message: Message):
     )
 
 
+@dp.message(Command(commands='help'), StateFilter(default_state))
+async def process_help_command(message: Message):
+    await message.answer(
+        text='Some help'
+    )
+
+
 # Этот хэндлер будет срабатывать на команду "/cancel" в состоянии
 # по умолчанию и сообщать, что эта команда работает внутри машины состояний
 @dp.message(Command(commands='cancel'), StateFilter(default_state))
