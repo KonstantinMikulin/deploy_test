@@ -42,5 +42,5 @@ async def process_button_click(callback: CallbackQuery) -> None:
 
 @user_router.message(F.text, MyFalseFilter())
 async def process_text(message: Message) -> None:
-    logger.debug()
-    logger.debug()
+    logger.debug('Вошли в хэндлер, обрабатывающий текст')
+    logger.debug('Выходим из хэндлера, обрабатывающего текст')
