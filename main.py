@@ -15,7 +15,7 @@ from middlewares_dir.outer_middlewares import (
     SecondOuterMiddleware,
     ThirdOuterMiddleware
 )
-from middlewares_dir.other_middlewares import ShadowBanMiddleware
+from middlewares_dir.other_middlewares import ShadowBanMiddleware, ThrottlingMiddleware
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -35,6 +35,7 @@ async def main() -> None:
     dp.include_router(user_router)
     dp.include_router(other_router)
 
+    dp.update.middleware(ThrottlingMiddleware())
     dp.update.middleware(ShadowBanMiddleware())
     dp.update.outer_middleware(FirstOuterMiddleware())
     user_router.callback_query.outer_middleware(SecondOuterMiddleware())
