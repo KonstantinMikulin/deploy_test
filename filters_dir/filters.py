@@ -7,9 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 class MyTrueFilter(BaseFilter):
-    async def __call__(self, event: TelegramObject) -> bool:
-        logger.debug('Попали внутрь фильтр %s', __class__.__name__)
 
+    async def __call__(self, event: TelegramObject) -> bool:
+        logger.debug('Попали внутрь фильтра %s', __class__.__name__)
+        print(event.model_dump())
         return True
 
 
@@ -18,4 +19,3 @@ class MyFalseFilter(BaseFilter):
         logger.debug('Попали внутрь фильтр %s', __class__.__name__)
 
         return False
-

@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import F, Router
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -17,7 +17,7 @@ user_router = Router()
 
 
 @user_router.message(CommandStart(), MyTrueFilter())
-async def process_start(message: Message) -> None:
+async def process_start_command(message: Message) -> None:
     logger.debug('Вошли в хэндлер, обрабатывающий команду /start')
 
     button = InlineKeyboardButton(
@@ -26,13 +26,13 @@ async def process_start(message: Message) -> None:
     )
     markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
 
-    await message.answer(text=LEXICON_RU['start'], reply_markup=markup)
+    await message.answer(text=LEXICON_RU['/start'], reply_markup=markup)
 
-    logger.debug('Выходим из хэндлера, обрабатывающего команду /start')
+    logger.debug('Вышли из хэндлера, обрабатывающего команду /start')
 
 
-@user_router.callback_query(F.data, MyTrueFilter)
-async def process_button_click(callback: CallbackQuery) -> None:
+@user_router.callback_query(F.data, MyTrueFilter())
+async def process_button_click(callback: CallbackQuery):
     logger.debug('Вошли в хэндлер, обрабатывающий нажатие на инлайн-кнопку')
 
     await callback.answer(text=LEXICON_RU['button_pressed'])
