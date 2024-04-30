@@ -1,0 +1,35 @@
+C:\Users\user\PycharmProjects\deploy_test\.venv\Scripts\python.exe C:\Users\user\PycharmProjects\deploy_test\logging_config_example\main.py
+#DEBUG    module_1:main - Лог DEBUG
+#INFO     module_1:main - Лог INFO
+#WARNING  module_1:main - Лог WARNING
+#ERROR    module_1:main - Лог ERROR
+#CRITICAL module_1:main - Лог CRITICAL
+Лог WARNING
+#WARNING  module_3:square_number - Лог WARNING
+Лог ERROR
+#ERROR    module_3:square_number - Лог ERROR
+Лог CRITICAL
+#CRITICAL module_3:square_number - Лог CRITICAL
+#WARNING  module_2:devide_number - Лог WARNING
+#ERROR    module_2:devide_number - Лог ERROR
+#CRITICAL module_2:devide_number - Лог CRITICAL
+Лог WARNING
+#WARNING  module_3:square_number - Лог WARNING
+Лог ERROR
+#ERROR    module_3:square_number - Лог ERROR
+Лог CRITICAL
+#CRITICAL module_3:square_number - Лог CRITICAL
+#WARNING  module_2:devide_number - Лог WARNING
+#ERROR    module_2:devide_number - Лог ERROR
+#CRITICAL module_2:devide_number - Лог CRITICAL
+#ERROR    module_2:devide_number - Произошло деление на 0
+Traceback (most recent call last):
+  File "C:\Users\user\PycharmProjects\deploy_test\logging_config_example\module_2.py", line 34, in devide_number
+    return divident / devider
+ZeroDivisionError: division by zero
+#WARNING  [2024-04-29 19:17:56,006] - module_2.py:29 - module_2:devide_number - Лог WARNING
+3.0
+#WARNING  [2024-04-29 19:17:56,006] - module_2.py:29 - module_2:devide_number - Лог WARNING
+None
+
+Process finished with exit code 0
