@@ -1,22 +1,24 @@
-import logging
+import asyncio
 
-from aiogram import Router
-from aiogram.types import Message
-from filters_dir.filters import MyTrueFilter, MyFalseFilter
-from lexicon_dir.lexicon import LEXICON_RU
-
-logger = logging.getLogger(__name__)
-
-other_router = Router()
+from aiogram import Bot, Dispatcher
+from config_data.config import Config, load_config
+from handlers_dir.user_handlers import user_router
 
 
-@other_router.message(MyTrueFilter())
-async def send_echo(message: Message) -> None:
-    logger.debug('Вошли в эхо-хэндлер')
+async def main():
+    config: Config = load_config()
+    bot = Bot(token=config.tg_bot.token)
+    dp = Dispatcher()
 
-    try:
-        await message.send_copy(chat_id=message.chat.id)
-    except TypeError:
-        await message.reply(text=LEXICON_RU['no_echo'])
+    var_1 = 'Hello from workflow'
+    var_2 = 'Workflow is not a joke'
 
-    logger.debug('Выходим из эхо-хэндлера')
+    dp.workflow_data.update({'first_var': var_1, 'second_var': var_2})
+    dp.include_router(user_router)
+
+    await dp.start_polling(bot)
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+

@@ -10,10 +10,11 @@ user_router = Router()
 
 
 @user_router.message(CommandStart())
-async def process_start_cmd(message: Message):
+async def process_start_cmd(message: Message, first_var, second_var):
     logger.debug('Вошли в хэндлер /start')
 
-    await message.answer(text='Hello! Hello!')
+    await message.answer(text=first_var)
+    await message.reply(text=second_var)
 
     logger.debug('Вышли из хэндлера /start')
 
