@@ -2,7 +2,7 @@ import logging
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject
+from aiogram.types import TelegramObject, User
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +21,11 @@ class FirstOuterMiddleware(BaseMiddleware):
             event.__class__.__name__
         )
 
-        user_name = event.from_user.first_name
+        user: User = data['event_from_user']
+        print(data)
+        # print(user)
 
-        if user_name == 'Konstantin':
-            logger.debug('Выходим из миддлвари %s', __class__.__name__)
-            return await handler(event, data)
-        else:
-            logger.debug('Выходим из миддлвари %s', __class__.__name__)
-            return
+        logger.debug('Вышли из миддлвари %s', __class__.__name__)
+
+        return await handler(event, data)
 
