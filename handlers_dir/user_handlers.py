@@ -15,7 +15,6 @@ user_router = Router()
 async def process_start_command(message: Message):
     logger.debug('Вошли в хэндлер /start для админа')
 
-    admin_name = message.from_user.first_name
-    await message.answer(text=f'Hello, admin {admin_name}')
+    await message.answer(text=f'Hello, admin {message.from_user.first_name}')
 
     logger.debug('Вышли из хэндлера /start для админа')

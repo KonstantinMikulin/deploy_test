@@ -1,8 +1,18 @@
+import logging
 import asyncio
 
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
 from handlers_dir.user_handlers import user_router
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
+           '%(lineno)d - %(name)s - %(message)s'
+)
+
+# Инициализируем логгер модуля
+logger = logging.getLogger(__name__)
 
 
 async def main():
@@ -10,10 +20,6 @@ async def main():
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
 
-    var_1 = 'Hello from workflow'
-    var_2 = 'Workflow is not a joke'
-
-    dp.workflow_data.update({'first_var': var_1, 'second_var': var_2})
     dp.include_router(user_router)
 
     await dp.start_polling(bot)
