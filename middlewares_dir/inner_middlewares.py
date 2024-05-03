@@ -26,4 +26,8 @@ class FirstInnerMiddleware(BaseMiddleware):
         if user.is_premium:
             return await handler(event, data)
         else:
+            await event.bot.send_message(
+                chat_id=user.id,
+                text='You don`t have Premium'
+            )
             return

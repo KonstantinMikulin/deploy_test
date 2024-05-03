@@ -8,6 +8,7 @@ from handlers_dir.user_handlers import user_router
 # from handlers_dir.other_handlers import other_router
 
 from middlewares_dir.outer_middlewares import FirstOuterMiddleware
+from middlewares_dir.inner_middlewares import FirstInnerMiddleware
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -27,6 +28,7 @@ async def main() -> None:
     dp.include_router(user_router)
 
     dp.update.outer_middleware(FirstOuterMiddleware())
+    dp.update.middleware(FirstInnerMiddleware())
 
     await dp.start_polling(bot)
 
