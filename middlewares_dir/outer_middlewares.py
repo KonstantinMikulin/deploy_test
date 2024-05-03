@@ -22,10 +22,8 @@ class FirstOuterMiddleware(BaseMiddleware):
         )
 
         user: User = data['event_from_user']
-        print(data)
-        # print(user)
 
-        logger.debug('Вышли из миддлвари %s', __class__.__name__)
-
-        return await handler(event, data)
-
+        if user.first_name == 'Konstantin':
+            return await handler(event, data)
+        else:
+            return
