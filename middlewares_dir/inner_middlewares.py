@@ -21,13 +21,22 @@ class FirstInnerMiddleware(BaseMiddleware):
             event.__class__.__name__
         )
 
-        user: User = data['event_from_user']
+        # user: User = data['event_from_user']
 
-        if user.is_premium:
-            return await handler(event, data)
-        else:
-            await event.bot.send_message(
-                chat_id=user.id,
-                text='You don`t have Premium'
-            )
-            return
+        # if user.is_premium:
+        #     result = await handler(event, data)
+        #     logger.debug('Вышли из внутренней миддлвари')
+        #     return result
+        # else:
+        #     await event.bot.send_message(
+        #         chat_id=user.id,
+        #         text='You don`t have Premium'
+        #     )
+        #     logger.debug('Вышли из внутренней миддлвари')
+        #     return
+
+        result = await handler(event, data)
+
+        logger.debug('Вышли из внутренней миддлвари')
+
+        return result
