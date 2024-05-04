@@ -2,36 +2,48 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-
 from config_data.config import Config, load_config
+from handlers_dir.other_handlers import other_router
 from handlers_dir.user_handlers import user_router
-# from handlers_dir.other_handlers import other_router
+from middlewares_dir.inner_middlewares import (
+    FirstInnerMiddleware,
+    SecondInnerMiddleware,
+    ThirdInnerMiddleware,
+)
+from middlewares_dir.outer_middlewares import (
+    FirstOuterMiddleware,
+    SecondOuterMiddleware,
+    ThirdOuterMiddleware,
+)
 
-from middlewares_dir.outer_middlewares import FirstOuterMiddleware
-from middlewares_dir.inner_middlewares import FirstInnerMiddleware
-
+# Настраиваем базовую конфигурацию логирования
 logging.basicConfig(
     level=logging.DEBUG,
     format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
            '%(lineno)d - %(name)s - %(message)s'
 )
 
+# Инициализируем логгер модуля
 logger = logging.getLogger(__name__)
 
 
+# Функция конфигурирования и запуска бота
 async def main() -> None:
+    # Загружаем конфиг в переменную config
     config: Config = load_config()
 
-    bot: Bot = Bot(token=config.tg_bot.token)
-    dp: Dispatcher = Dispatcher()
+    # Инициализируем бот и диспетчер
+    bot = Bot(token=config.tg_bot.token)
+    dp = Dispatcher()
 
-    logger.info('Подключаем роутеры')
+    # Регистрируем роутеры в диспетчере
     dp.include_router(user_router)
+    dp.include_router(other_router)
 
-    logger.info('Подключаем миддлвари')
+    # Здесь будем регистрировать миддлвари
     dp.update.outer_middleware(FirstOuterMiddleware())
-    dp.update.middleware(FirstInnerMiddleware())
 
+    # Запускаем polling
     await dp.start_polling(bot)
 
 
