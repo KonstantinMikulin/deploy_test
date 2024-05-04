@@ -25,8 +25,10 @@ async def main() -> None:
     bot: Bot = Bot(token=config.tg_bot.token)
     dp: Dispatcher = Dispatcher()
 
+    logger.info('Подключаем роутеры')
     dp.include_router(user_router)
 
+    logger.info('Подключаем миддлвари')
     dp.update.outer_middleware(FirstOuterMiddleware())
     dp.update.middleware(FirstInnerMiddleware())
 
