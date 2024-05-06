@@ -2,8 +2,8 @@ import logging
 
 from aiogram import Router
 from aiogram.types import Message
-from filters_dir.filters import MyTrueFilter
-from lexicon_dir.lexicon import LEXICON_RU
+from filters.filters import MyTrueFilter
+from lexicon.lexicon import LEXICON_RU
 
 logger = logging.getLogger(__name__)
 
