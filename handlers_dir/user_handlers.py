@@ -8,8 +8,8 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
-from filters.filters import MyFalseFilter, MyTrueFilter
-from lexicon.lexicon import LEXICON_RU
+from filters_dir.filters import MyFalseFilter, MyTrueFilter
+from lexicon_dir.lexicon import LEXICON_RU
 
 # Инициализируем логгер модуля
 logger = logging.getLogger(__name__)

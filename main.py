@@ -3,14 +3,14 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from config_data.config import Config, load_config
-from handlers.other import other_router
-from handlers.user import user_router
-from middlewares.inner import (
+from handlers_dir.other_handlers import other_router
+from handlers_dir.user_handlers import user_router
+from middlewares_dir.inner_middlewares import (
     FirstInnerMiddleware,
     SecondInnerMiddleware,
     ThirdInnerMiddleware,
 )
-from middlewares.outer import (
+from middlewares_dir.outer_middlewares import (
     FirstOuterMiddleware,
     SecondOuterMiddleware,
     ThirdOuterMiddleware,
@@ -42,7 +42,12 @@ async def main() -> None:
     dp.include_router(other_router)
 
     # Здесь будем регистрировать миддлвари
-    # ...
+    dp.update.outer_middleware(FirstOuterMiddleware())
+    user_router.callback_query.outer_middleware(SecondOuterMiddleware())
+    other_router.message.outer_middleware(ThirdOuterMiddleware())
+    user_router.message.middleware(FirstInnerMiddleware())
+    user_router.callback_query.middleware(SecondInnerMiddleware())
+    other_router.message.middleware(ThirdInnerMiddleware())
 
     # Запускаем polling
     await dp.start_polling(bot)
