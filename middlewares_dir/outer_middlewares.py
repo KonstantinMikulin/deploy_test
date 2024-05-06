@@ -16,7 +16,7 @@ class FirstOuterMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
 
-        user: User = data['event_from_user']
+        user: User = data.get('event_from_user')
 
         await event.bot.send_message(text='In a moment you will ENTER FirstOuterMiddleware',
                                      chat_id=user.id)
