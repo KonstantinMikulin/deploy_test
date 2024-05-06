@@ -2,7 +2,7 @@ import logging
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject
+from aiogram.types import TelegramObject, User
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,11 @@ class FirstOuterMiddleware(BaseMiddleware):
         data: Dict[str, Any]
     ) -> Any:
 
+        user: User = data['event_from_user']
+
+        await event.bot.send_message(text='In a moment you will ENTER FirstOuterMiddleware',
+                                     chat_id=user.id)
+
         logger.debug(
             'Вошли в миддлварь %s, тип события %s',
             __class__.__name__,
@@ -23,6 +28,9 @@ class FirstOuterMiddleware(BaseMiddleware):
         )
 
         result = await handler(event, data)
+
+        await event.bot.send_message(text='In a moment you will LEAVE FirstOuterMiddleware',
+                                     chat_id=user.id)
 
         logger.debug('Выходим из миддлвари  %s', __class__.__name__)
 

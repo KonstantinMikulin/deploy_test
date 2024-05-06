@@ -46,7 +46,7 @@ async def main() -> None:
     user_router.callback_query.outer_middleware(SecondOuterMiddleware())
     other_router.message.outer_middleware(ThirdOuterMiddleware())
     user_router.message.middleware(FirstInnerMiddleware())
-    user_router.callback_query.middleware(SecondInnerMiddleware())
+    user_router.message.middleware(SecondInnerMiddleware())
     other_router.message.middleware(ThirdInnerMiddleware())
 
     # Запускаем polling
