@@ -54,6 +54,7 @@ async def main() -> None:
 
     # Здесь будем регистрировать миддлвари
     dp.update.middleware(TranslatorMiddleware())
+    # i18n test done
 
     # Запускаем polling
     await dp.start_polling(bot, _translations=translations)
