@@ -9,7 +9,7 @@ from aiogram.types import (
     Message,
 )
 from filters_dir.filters import MyFalseFilter, MyTrueFilter
-from lexicon_dir.lexicon import LEXICON_RU
+from lexicon_dir.lexicon_ru import LEXICON_RU
 
 # Инициализируем логгер модуля
 logger = logging.getLogger(__name__)
@@ -20,17 +20,17 @@ user_router = Router()
 
 # Этот хэндлер срабатывает на команду /start
 @user_router.message(CommandStart(), MyTrueFilter())
-async def process_start_command(message: Message):
+async def process_start_command(message: Message, i18n: dict[str, str]):
     logger.debug('Вошли в хэндлер, обрабатывающий команду /start')
     # Создаем объект инлайн-кнопки
     button = InlineKeyboardButton(
-        text='Кнопка',
+        text=i18n.get('button'),
         callback_data='button_pressed'
     )
     # Создаем объект инлайн-клавиатуры
     markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
     # Отправляем сообщение пользователю
-    await message.answer(text=LEXICON_RU['/start'], reply_markup=markup)
+    await message.answer(text=i18n.get('/start'), reply_markup=markup)
     logger.debug('Выходим из хэндлера, обрабатывающего команду /start')
 
 

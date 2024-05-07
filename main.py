@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+
 from config_data.config import Config, load_config
 from handlers_dir.other_handlers import other_router
 from handlers_dir.user_handlers import user_router
@@ -15,6 +16,10 @@ from middlewares_dir.outer_middlewares import (
     SecondOuterMiddleware,
     ThirdOuterMiddleware,
 )
+from middlewares_dir.i18n import TranslatorMiddleware
+
+from lexicon_dir.lexicon_ru import LEXICON_RU
+from lexicon_dir.lexicon_en import LEXICON_EN
 
 # Настраиваем базовую конфигурацию логирования
 logging.basicConfig(
@@ -33,6 +38,12 @@ async def main() -> None:
     # Загружаем конфиг в переменную config
     config: Config = load_config()
 
+    translations = {
+        'default': 'ru',
+        'en': LEXICON_EN,
+        'ru': LEXICON_RU,
+    }
+
     # Инициализируем бот и диспетчер
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
@@ -42,15 +53,10 @@ async def main() -> None:
     dp.include_router(other_router)
 
     # Здесь будем регистрировать миддлвари
-    dp.update.outer_middleware(FirstOuterMiddleware())
-    user_router.callback_query.outer_middleware(SecondOuterMiddleware())
-    other_router.message.outer_middleware(ThirdOuterMiddleware())
-    user_router.message.middleware(FirstInnerMiddleware())
-    user_router.message.middleware(SecondInnerMiddleware())
-    other_router.message.middleware(ThirdInnerMiddleware())
+    dp.update.middleware(TranslatorMiddleware())
 
     # Запускаем polling
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, _translations=translations)
 
 
 asyncio.run(main())
