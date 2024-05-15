@@ -5,6 +5,7 @@ from aiogram.types import Message, User
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, setup_dialogs
 from aiogram_dialog.widgets.text import Format
 from environs import Env
+from pprint import pprint
 
 env = Env()
 env.read_env()
@@ -19,8 +20,9 @@ class StartSG(StatesGroup):
     start = State()
 
 
-async def username_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs) -> dict:
-    return {'username': event_from_user.username}
+async def username_getter(**kwargs) -> dict:
+    pprint(kwargs)
+    return {'username': 'Konstantin'}
 
 
 start_dialog = Dialog(
