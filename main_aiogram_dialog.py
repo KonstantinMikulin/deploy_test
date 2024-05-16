@@ -1,3 +1,5 @@
+import random
+
 from aiogram import Bot, Dispatcher, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -7,9 +9,11 @@ from aiogram.types import Message, CallbackQuery, User
 
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, setup_dialogs
 from aiogram_dialog.widgets.kbd import Button, Row
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const, Format, Case
 
 from environs import Env
+
+from config_data.config_2 import text_dict
 
 env = Env()
 env.read_env()
@@ -44,16 +48,19 @@ async def get_username(event_from_user: User, **kwargs) -> dict:
     return {'username': event_from_user.username}
 
 
+async def get_random_number(**kwargs) -> dict:
+    return {'number': random.randint(1, 3)}
+
+
 start_dialog = Dialog(
     Window(
-        Format(text='Hello, {username}!\n'), Const(text='Have you ever try aiogram_dialog?'),
-        Row(
-            Button(text=Const('YES'), id='yes', on_click=yes_click_process),
-            Button(text=Const('NO'), id='no', on_click=no_click_proces)
+        Case(
+            texts=text_dict,
+            selector='number',
         ),
-        getter=get_username,
+        getter=get_random_number,
         state=StartSG.start
-    ),
+    )
 )
 
 
