@@ -1,4 +1,4 @@
-{
+a = {
 'dispatcher': <Dispatcher '0x20e7356a380'>,
 'bots': (<aiogram.client.bot.Bot object at 0x0000020E73568D30>,),
 'bot': <aiogram.client.bot.Bot object at 0x0000020E73568D30>,

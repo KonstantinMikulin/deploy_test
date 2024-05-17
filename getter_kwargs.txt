@@ -1,4 +1,5 @@
-{'aiogd_context': Context(_intent_id='tH5pj8',
+getter_kwargs = {
+'aiogd_context': Context(_intent_id='tH5pj8',
                           _stack_id='',
                           state=<State 'StartSG:start'>,
                           start_data=None,

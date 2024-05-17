@@ -31,19 +31,33 @@ class StartSG(StatesGroup):
 
 
 async def button_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager) -> None:
-    await callback.message.answer('Кажется, ты нажал на кнопку!')
+    another_button = dialog_manager.dialog_data.get('another_button')
+    print(another_button)
+    dialog_manager.dialog_data.update(another_button=not another_button)
+
+
+async def get_button_status(dialog_manager: DialogManager, **kwargs) -> dict:
+    another_button = dialog_manager.dialog_data.get('another_button')
+
+    return {'button_status': another_button}
 
 
 start_dialog = Dialog(
     Window(
-        Const('Это сообщение с инлайн-кнопкой. На кнопку можно нажать'),
+        Const('На кнопки из этого сообщения можно нажать!'),
         Button(
-            text=Const('Push'),
+            text=Const('Press this'),
             id='button_1',
             on_click=button_clicked
         ),
-        state=StartSG.start
-    ),
+        Button(
+            text=Const('Press this too'),
+            id='button_2',
+            when='button_status'
+        ),
+        state=StartSG.start,
+        getter=get_button_status
+    )
 )
 
 
