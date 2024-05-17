@@ -9,7 +9,7 @@ from aiogram.types import Message, CallbackQuery, User
 
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, setup_dialogs
 from aiogram_dialog.widgets.kbd import Button, Row
-from aiogram_dialog.widgets.text import Const, Format, Case
+from aiogram_dialog.widgets.text import Const, Format, Case, List
 
 from environs import Env
 
@@ -52,13 +52,21 @@ async def get_random_number(**kwargs) -> dict:
     return {'number': random.randint(1, 3)}
 
 
+async def get_items(**kwargs) -> dict:
+    return {'items': (
+        (1, 'Пункт 1'),
+        (2, 'Пункт 2'),
+        (3, 'Пункт 3'),
+    )}
+
+
 start_dialog = Dialog(
     Window(
-        Case(
-            texts=text_dict,
-            selector='number',
+        List(
+            field=Format('<b>{item[0]}</b>. {item[1]}'),
+            items='items'
         ),
-        getter=get_random_number,
+        getter=get_items,
         state=StartSG.start
     )
 )
