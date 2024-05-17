@@ -30,45 +30,20 @@ class StartSG(StatesGroup):
     start = State()
 
 
-async def yes_click_process(callback: CallbackQuery, widget: Button, dialog_manager: DialogManager) -> None:
-    await callback.message.edit_text(
-        text='Thank you for YES!'
-    )
-    await dialog_manager.done()
-
-
-async def no_click_proces(callback: CallbackQuery, widget: Button, dialog_manage: DialogManager) -> None:
-    await callback.message.edit_text(
-        text='Oh :( But thank you anyway'
-    )
-    await dialog_manage.done()
-
-
-async def get_username(event_from_user: User, **kwargs) -> dict:
-    return {'username': event_from_user.username}
-
-
-async def get_random_number(**kwargs) -> dict:
-    return {'number': random.randint(1, 3)}
-
-
-async def get_items(**kwargs) -> dict:
-    return {'items': (
-        (1, 'Пункт 1'),
-        (2, 'Пункт 2'),
-        (3, 'Пункт 3'),
-    )}
+async def button_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager) -> None:
+    await callback.message.answer('Кажется, ты нажал на кнопку!')
 
 
 start_dialog = Dialog(
     Window(
-        List(
-            field=Format('<b>{item[0]}</b>. {item[1]}'),
-            items='items'
+        Const('Это сообщение с инлайн-кнопкой. На кнопку можно нажать'),
+        Button(
+            text=Const('Push'),
+            id='button_1',
+            on_click=button_clicked
         ),
-        getter=get_items,
         state=StartSG.start
-    )
+    ),
 )
 
 
