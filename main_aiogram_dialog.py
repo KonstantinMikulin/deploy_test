@@ -30,43 +30,50 @@ class StartSG(StatesGroup):
     start = State()
 
 
-async def button_clicked(callback: CallbackQuery, button: Button, dialog_manager: DialogManager) -> None:
-    another_button = dialog_manager.dialog_data.get('another_button')
-    print(another_button)
-    dialog_manager.dialog_data.update(another_button=not another_button)
+class SecondDialogSG(StatesGroup):
+    start = State()
 
 
-async def get_button_status(dialog_manager: DialogManager, **kwargs) -> dict:
-    another_button = dialog_manager.dialog_data.get('another_button')
+# стек сбрасывается только здесь, потому что это стартовый диалог
+async def go_start(callback: CallbackQuery, button: Button, dialog_manager: DialogManager) -> None:
+    await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
 
-    return {'button_status': another_button}
+
+# переключение между диалогами происходит через вызов dialog_manager.start
+async def start_second(callback: CallbackQuery, button: Button, dialog_manager: DialogManager) -> None:
+    await dialog_manager.start(state=SecondDialogSG.start)
+
+
+async def username_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs) -> dict[str, str]:
+    return {'username': event_from_user.username or 'Stranger'}
 
 
 start_dialog = Dialog(
     Window(
-        Const('На кнопки из этого сообщения можно нажать!'),
-        Button(
-            text=Const('Press this'),
-            id='button_1',
-            on_click=button_clicked
-        ),
-        Button(
-            text=Const('Press this too'),
-            id='button_2',
-            when='button_status'
-        ),
-        state=StartSG.start,
-        getter=get_button_status
-    )
+        Format('<b>Привет, {username}!</b>\n'),
+        Const('Нажми на кнопку,\nчтобы перейти во второй диалог 👇'),
+        Button(Const('Кнопка'), id='go_second', on_click=start_second),
+        getter=username_getter,
+        state=StartSG.start
+    ),
+)
+
+second_dialog = Dialog(
+    Window(
+        Const('Нажми на кнопку,\nчтобы вернуться в стартовый диалог 👇'),
+        Button(Const('Кнопка'), id='button_start', on_click=go_start),
+        state=SecondDialogSG.start
+    ),
 )
 
 
-@router.message(CommandStart())
+@dp.message(CommandStart())
 async def command_start_process(message: Message, dialog_manager: DialogManager) -> None:
     await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
 
 
 dp.include_router(router)
-dp.include_router(start_dialog)
+# диалоги нужно регистрировать в роутере после классических хэндлеров
+dp.include_routers(start_dialog, second_dialog)
 setup_dialogs(dp)
 dp.run_polling(bot)

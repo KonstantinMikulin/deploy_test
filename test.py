@@ -1,39 +1,52 @@
-a = {
-'dispatcher': <Dispatcher '0x20e7356a380'>,
-'bots': (<aiogram.client.bot.Bot object at 0x0000020E73568D30>,),
-'bot': <aiogram.client.bot.Bot object at 0x0000020E73568D30>,
+from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog.widgets.text import Const, Format
 
-'event_context': EventContext(chat=Chat(id=828900493, type='private', title=None, username='konstantin_mikulin',
-first_name='Konstantin', last_name='Mikulin', is_forum=None, photo=None, active_usernames=None, birthdate=None,
-business_intro=None, business_location=None, business_opening_hours=None, personal_chat=None, available_reactions=None,
-accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-profile_background_custom_emoji_id=None, emoji_status_custom_emoji_id=None, emoji_status_expiration_date=None,
-bio=None, has_private_forwards=None, has_restricted_voice_and_video_messages=None, join_to_send_messages=None,
-join_by_request=None, description=None, invite_link=None, pinned_message=None, permissions=None, slow_mode_delay=None,
-unrestrict_boost_count=None, message_auto_delete_time=None, has_aggressive_anti_spam_enabled=None,
-has_hidden_members=None, has_protected_content=None, has_visible_history=None, sticker_set_name=None,
-can_set_sticker_set=None, custom_emoji_sticker_set_name=None, linked_chat_id=None, location=None),
-user=User(id=828900493, is_bot=False, first_name='Konstantin', last_name='Mikulin', username='konstantin_mikulin',
-language_code='ru', is_premium=True, added_to_attachment_menu=None, can_join_groups=None,
-can_read_all_group_messages=None, supports_inline_queries=None, can_connect_to_business=None), thread_id=None,
-business_connection_id=None),
+# ...
 
-'event_from_user': User(id=828900493, is_bot=False, first_name='Konstantin', last_name='Mikulin',
-username='konstantin_mikulin', language_code='ru', is_premium=True, added_to_attachment_menu=None, can_join_groups=None,
-can_read_all_group_messages=None, supports_inline_queries=None, can_connect_to_business=None),
 
-'event_chat': Chat(id=828900493, type='private', title=None, username='konstantin_mikulin', first_name='Konstantin',
-last_name='Mikulin', is_forum=None, photo=None, active_usernames=None, birthdate=None, business_intro=None,
-business_location=None, business_opening_hours=None, personal_chat=None, available_reactions=None, accent_color_id=None,
-background_custom_emoji_id=None, profile_accent_color_id=None, profile_background_custom_emoji_id=None,
-emoji_status_custom_emoji_id=None, emoji_status_expiration_date=None, bio=None, has_private_forwards=None,
-has_restricted_voice_and_video_messages=None, join_to_send_messages=None, join_by_request=None, description=None,
-invite_link=None, pinned_message=None, permissions=None, slow_mode_delay=None, unrestrict_boost_count=None,
-message_auto_delete_time=None, has_aggressive_anti_spam_enabled=None, has_hidden_members=None,
-has_protected_content=None, has_visible_history=None, sticker_set_name=None, can_set_sticker_set=None,
-custom_emoji_sticker_set_name=None, linked_chat_id=None, location=None),
+class StartSG(StatesGroup):
+    start = State()
 
-'fsm_storage': <aiogram.fsm.storage.memory.MemoryStorage object at 0x0000020E73569DE0>,
-'state': <aiogram.fsm.context.FSMContext object at 0x0000020E735A9F30>,
-'raw_state': None
-}
+
+class SecondDialogSG(StatesGroup):
+    start = State()
+
+
+async def go_start(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
+
+
+async def start_second(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    await dialog_manager.start(state=SecondDialogSG.start)
+
+
+async def username_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs):
+    return {'username': event_from_user.username or 'Stranger'}
+
+
+start_dialog = Dialog(
+    Window(
+        Format('<b>Привет, {username}!</b>\n'),
+        Const('Нажми на кнопку,\nчтобы перейти во второй диалог 👇'),
+        Button(Const('Кнопка'), id='go_second', on_click=start_second),
+        getter=username_getter,
+        state=StartSG.start
+    ),
+)
+
+second_dialog = Dialog(
+    Window(
+        Const('Нажми на кнопку,\nчтобы вернуться в стартовый диалог 👇'),
+        Button(Const('Кнопка'), id='button_start', on_click=go_start),
+        state=SecondDialogSG.start
+    ),
+)
+
+
+@dp.message(CommandStart())
+async def command_start_process(message: Message, dialog_manager: DialogManager):
+    await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
+
+# ...
+
+dp.include_routers(start_dialog, second_dialog)
