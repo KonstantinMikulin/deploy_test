@@ -45,6 +45,7 @@ async def start_second(callback: CallbackQuery, button: Button, dialog_manager: 
 
 
 async def username_getter(dialog_manager: DialogManager, event_from_user: User, **kwargs) -> dict[str, str]:
+    print(f'This is start data: {dialog_manager.start_data}')
     return {'username': event_from_user.username or 'Stranger'}
 
 
@@ -67,9 +68,11 @@ second_dialog = Dialog(
 )
 
 
+# /start handler with conde for store data in dialog_manage.start_data
 @dp.message(CommandStart())
 async def command_start_process(message: Message, dialog_manager: DialogManager) -> None:
-    await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK)
+    user_is_prem = message.from_user.is_premium
+    await dialog_manager.start(state=StartSG.start, mode=StartMode.RESET_STACK, data={'user_prem': user_is_prem})
 
 
 dp.include_router(router)
