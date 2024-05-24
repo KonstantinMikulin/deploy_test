@@ -8,7 +8,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import Message, CallbackQuery, User
 
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, setup_dialogs
-from aiogram_dialog.widgets.kbd import Button, Row, Start, Next, Back
+from aiogram_dialog.widgets.kbd import Button, Row, Start, Next, Back, SwitchTo
 from aiogram_dialog.widgets.text import Const, Format, Case, List
 
 from environs import Env
@@ -73,48 +73,66 @@ start_dialog = Dialog(
         Format('<b>Привет, {username}!</b>\n', when='first_show'),
         Const('Это <b>первое</b> окно диалога. Выбери в какое окно хочешь перейти 👇'),
         Row(
-            Button(Const('2'), id='b_second', on_click=go_second),
-            Button(Const('3'), id='b_third', on_click=go_third),
-            Button(Const('4'), id='b_fourth', on_click=go_fourth),
+            SwitchTo(Const('2'), id='b_second', state=StartSG.window_2),
+            # Button(Const('2'), id='b_second', on_click=go_second),
+            SwitchTo(Const('3'), id='b_third', state=StartSG.window_3),
+            # Button(Const('3'), id='b_third', on_click=go_third),
+            SwitchTo(Const('4'), id='b_fourth', state=StartSG.window_4)
+            # Button(Const('4'), id='b_fourth', on_click=go_fourth)
         ),
-        Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
+        Next(Const('Вперед ▶️'), id='b_next'),
+        # Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
         getter=username_getter,
         state=StartSG.window_1
     ),
     Window(
         Const('Это <b>второе</b> окно диалога. Выбери в какое окно хочешь перейти 👇'),
         Row(
-            Button(Const('1'), id='b_first', on_click=go_first),
-            Button(Const('3'), id='b_third', on_click=go_third),
-            Button(Const('4'), id='b_fourth', on_click=go_fourth),
+            SwitchTo(Const('1'), id='b_first', state=StartSG.window_1),
+            # Button(Const('1'), id='b_first', on_click=go_first),
+            SwitchTo(Const('3'), id='b_third', state=StartSG.window_3),
+            # Button(Const('3'), id='b_third', on_click=go_third),
+            SwitchTo(Const('4'), id='b_fourth', state=StartSG.window_4)
+            # Button(Const('4'), id='b_fourth', on_click=go_fourth),
         ),
         Row(
-            Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
-            Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
+            Back(Const('◀️ Назад'), id='b_back'),
+            # Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
+            Next(Const('Вперед ▶️'), id='b_next')
+            # Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
         ),
         state=StartSG.window_2
     ),
     Window(
         Const('Это <b>третье</b> окно диалога. Выбери в какое окно хочешь перейти 👇'),
         Row(
-            Button(Const('1'), id='b_first', on_click=go_first),
-            Button(Const('2'), id='b_second', on_click=go_second),
-            Button(Const('4'), id='b_fourth', on_click=go_fourth),
+            SwitchTo(Const('1'), id='b_first', state=StartSG.window_1),
+            # Button(Const('1'), id='b_first', on_click=go_first),
+            SwitchTo(Const('2'), id='b_second', state=StartSG.window_2),
+            # Button(Const('2'), id='b_second', on_click=go_second),
+            SwitchTo(Const('4'), id='b_fourth', state=StartSG.window_4)
+            # Button(Const('4'), id='b_fourth', on_click=go_fourth),
         ),
         Row(
-            Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
-            Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
+            Back(Const('◀️ Назад'), id='b_back'),
+            Next(Const('Вперед ▶️'), id='b_next')
+            # Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
+            # Button(Const('Вперед ▶️'), id='b_next', on_click=go_next),
         ),
         state=StartSG.window_3
     ),
     Window(
         Const('Это <b>четвертое</b> окно диалога. Выбери в какое окно хочешь перейти 👇'),
         Row(
-            Button(Const('1'), id='b_first', on_click=go_first),
-            Button(Const('2'), id='b_second', on_click=go_second),
-            Button(Const('3'), id='b_third', on_click=go_third),
+            SwitchTo(Const('1'), id='b_first', state=StartSG.window_1),
+            # Button(Const('1'), id='b_first', on_click=go_first),
+            SwitchTo(Const('2'), id='b_second', state=StartSG.window_2),
+            # Button(Const('2'), id='b_second', on_click=go_second),
+            SwitchTo(Const('3'), id='b_third', state=StartSG.window_3)
+            # Button(Const('3'), id='b_third', on_click=go_third),
         ),
-        Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
+        Back(Const('◀️ Назад'), id='b_back'),
+        # Button(Const('◀️ Назад'), id='b_back', on_click=go_back),
         state=StartSG.window_4
     ),
 )
