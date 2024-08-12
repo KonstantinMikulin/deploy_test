@@ -7,6 +7,8 @@ from bot.handlers import get_routers
 
 
 async def main() -> None:
+    print("Starting polling...")
+    
     config: Config = load_config()
 
     bot = Bot(token=config.tg_bot.token)
