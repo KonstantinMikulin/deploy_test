@@ -2,8 +2,8 @@ import asyncio
 
 from aiogram import Bot, Dispatcher # type: ignore
 
-from bot.config_reader import Config, load_config
-from bot.handlers import get_routers
+from config_reader import Config, load_config
+from handlers import get_routers
 
 
 async def main() -> None:
