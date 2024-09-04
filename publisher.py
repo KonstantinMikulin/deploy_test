@@ -5,7 +5,7 @@ import aiormq
 async def publish():
     # Подключение к rabbitmq
     connection = await aiormq.connect(
-        "amqp://rabbitmqlogin:rabbitmqpassword@localhost/"
+        "amqp://costa:12345@localhost/"
     )
     
     # Создание канала
@@ -16,7 +16,7 @@ async def publish():
     
     # Отправка сообщения в exchange
     await channel.basic_publish(
-        body="Привет из RabbitMQ!".encode("utf-8"),
+        body="Hi hi hi из RabbitMQ!".encode("utf-8"),
         exchange="test_exchange",
         routing_key="test_routing_key"
     )
