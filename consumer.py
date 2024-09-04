@@ -9,7 +9,7 @@ from aiormq.abc import DeliveredMessage
 # Callbck-функция, вызываемая на каждое сообщение для консьюмера
 async def on_message(message: DeliveredMessage):
     # Декодируем и десериализируем сообщение
-    body: dict = json.loads(message.body.decode('utg-8'))
+    body: dict = json.loads(message.body.decode('utf-8'))
     
     print(f'Сообщение {body.get("counter")} получено')
     print(f'{body.get("text")} {body.get("counter")}')
