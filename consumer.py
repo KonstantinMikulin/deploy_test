@@ -9,7 +9,7 @@ async def on_message(message: DeliveredMessage):
     print(message.body.decode())
 
     # Явное подтверждение получения и обработки сообщения
-    await message.channel.basic_ack(delivery_tag=message.delivery.delivery_tag)
+    await message.channel.basic_ack(delivery_tag=message.delivery.delivery_tag)  # type: ignore
 
 
 async def main():
