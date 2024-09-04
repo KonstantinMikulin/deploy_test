@@ -45,7 +45,7 @@ async def main():
     )
     
     # Определяем количество сообщений, которое консьюмер может получить за один раз
-    # await channel.basic_qos(prefetch_count=1)
+    await channel.basic_qos(prefetch_count=1)
     
     # Настраиваем прослушивае очереди
     await channel.basic_consume(declare_ok.queue, on_message, no_ack=False)
