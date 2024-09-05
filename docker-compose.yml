@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: "rabbitmq:management"  # используем образ с включенным управлением
+    image: "heidiks/rabbitmq-delayed-message-exchange:latest"
     hostname: my_rabbitmq
     restart: always
     ports:
