@@ -1,29 +1,43 @@
 import asyncio
+import json
+from datetime import datetime, timedelta, timezone
+
 import aiormq
 
 
-async def publish():
-    # Подключение к rabbitmq
+async def publish_message():
+    # Подключаемся к RabbitMQ
     connection = await aiormq.connect(
         "amqp://costa:12345@localhost/"
     )
     
-    # Создание канала
+    # Создаем канал
     channel = await connection.channel()
     
-    # Объявление точки обмена (создается, если не существует)
-    await channel.exchange_declare("test_exchange", exchange_type='direct')
+    # Объявляем точку обмена (создается, если не существует)
+    await channel.exchange_declare('main_exchange', exchange_type='direct')
     
-    # Отправка сообщения в exchange
+    # Объявляем время, когда сообщение должно быть обработано
+    scheduled_time = (datetime.now(timezone.utc) + timedelta(seconds=5)).isoformat()
+    
+    # Создаем словарь, из которого будет сформировано тело сообщения
+    body = {
+        'text': 'Hi from RabbirMQ!'
+    }
+    
+    # Отправляем сообщение в обменник main_exchange
     await channel.basic_publish(
-        body="Hi hi hi из RabbitMQ!".encode("utf-8"),
-        exchange="test_exchange",
-        routing_key="test_routing_key"
+        body=json.dumps(body).encode("utf-8"),
+        exchange="main_exchange",
+        routing_key="main_routing_key",
+        properties=aiormq.spec.Basic.Properties(
+            headers={
+                "scheduled_time": scheduled_time
+            }
+        ),
     )
     
-    # Закрытие соединения
-    await connection.close()
+    print(f'Published message with scheduled time: {scheduled_time}')
     
-
-asyncio.run(publish())
     
+asyncio.run(publish_message())
