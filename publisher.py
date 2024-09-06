@@ -1,29 +1,24 @@
 import asyncio
-import aiormq
+import nats
 
 
-async def publish():
-    # Подключение к rabbitmq
-    connection = await aiormq.connect(
-        "amqp://costa:12345@localhost/"
-    )
+async def main():
+    # Подключаемся к NATS серверу
+    nc = await nats.connect('nats://127.0.0.1.:4222')
     
-    # Создание канала
-    channel = await connection.channel()
+    # Сообщение для отправки
+    message = 'Hello hello from Python!'
     
-    # Объявление точки обмена (создается, если не существует)
-    await channel.exchange_declare("test_exchange", exchange_type='direct')
+    # Сабджект, в которой отправляется сообщение
+    subject = 'my.first.subject'
     
-    # Отправка сообщения в exchange
-    await channel.basic_publish(
-        body="Hi hi hi из RabbitMQ!".encode("utf-8"),
-        exchange="test_exchange",
-        routing_key="test_routing_key"
-    )
+    # Публикуем сообщение в указанный сабджект
+    await nc.publish(subject=subject, payload=message.encode())
     
-    # Закрытие соединения
-    await connection.close()
-    
+    print(f'Message "{message}" published in subject "{subject}"')
 
-asyncio.run(publish())
+    # Закрываем соединение
+    await nc.close()
     
+    
+asyncio.run(main())
