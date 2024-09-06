@@ -4,7 +4,7 @@ import nats
 
 async def main():
     # Подключаемся к NATS серверу
-    nc = await nats.connect('nats://127.0.0.1.:4222')
+    nc = await nats.connect("nats://127.0.0.1:4222")
     
     # Сообщение для отправки
     message = 'Hello hello from Python!'
