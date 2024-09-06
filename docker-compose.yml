@@ -1,0 +1,21 @@
+services:
+  nats:
+    image: nats:latest
+    entrypoint: /nats-server
+    command: -c /config/server.cong
+    ports:
+      - 4222:4222
+      - 8222:8222
+    volumes:
+      - ./nats/data:/data
+      - ./nats/config/server.conf:/config/server.conf
+    
+  nats-nui:
+    image: ghcr.io/nats-nui/nui:latest
+    container_name: nats-nui
+    ports:
+      - 31311:31311 # Порт для доступа к NATS NUI
+    volumes:
+      - ./nui/db:/db
+    depends_on:
+      - nats
