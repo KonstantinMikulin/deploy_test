@@ -2,7 +2,7 @@ services:
   nats:
     image: nats:latest
     entrypoint: /nats-server
-    command: -c /config/server.cong
+    command: -c /config/server.conf
     ports:
       - 4222:4222
       - 8222:8222
