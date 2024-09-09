@@ -23,12 +23,19 @@ logger = logging.getLogger(__name__)
 async def main():
     config: Config = load_config() #type:ignore
     
-    bot = Bot(token=config.tg_bot.token)
+    bot = Bot(
+        token=config.tg_bot.token,
+        default=DefaultBotProperties(parse_mode=ParseMode)
+        )
     dp = Dispatcher()
     
+    translator_hub: TranslatorHub = create_translator_hub() #type:ignore
+    
     dp.include_routers(user_router, other_router)
+    
+    dp.update.middleware(TranslatorRunnerMiddleware())
 
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, _translator_hub=translator_hub)
     
     
 asyncio.run(main())
