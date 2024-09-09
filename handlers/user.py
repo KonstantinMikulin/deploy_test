@@ -8,26 +8,27 @@ from aiogram.types import (
 )
 from fluentogram import TranslatorRunner
 
-
+# Инициализируем роутер уровня модуля
 user_router = Router()
 
 
-@user_router.message
-async def process_cmd_start(message: Message, i18n: TranslatorRunner):
+# Этот хэндлер срабатывает на команду /start
+@user_router.message(CommandStart())
+async def process_start_command(message: Message, i18n: TranslatorRunner):
     username = html.quote(message.from_user.full_name)
-    
+    # Создаем объект инлайн-кнопки
     button = InlineKeyboardButton(
-        text=i18n.button.button(),
-        callback_data='button_pressed'
+        text=i18n.button.button(), callback_data="button_pressed"
     )
+    # Создаем объект инлайн-клавиатуры
     markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
-    
+    # Отправляем сообщение пользователю
     await message.answer(
-        text=i18n.hello.user(username=username),
-        reply_markup=markup
+        text=i18n.hello.user(username=username), reply_markup=markup
     )
-    
-    
-@user_router.callback_query
+
+
+# Этот хэндлер срабатывает на нажатие инлайн-кнопки
+@user_router.callback_query(F.data == "button_pressed")
 async def process_button_click(callback: CallbackQuery, i18n: TranslatorRunner):
     await callback.answer(text=i18n.button.pressed())
