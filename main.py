@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    config: Config = load_config()
+    config: Config = load_config() #type:ignore
     
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
