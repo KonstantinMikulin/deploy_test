@@ -1,6 +1,6 @@
 import asyncio
 import aiormq
-
+#
 
 async def publish():
     # Подключение к rabbitmq

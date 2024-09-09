@@ -3,7 +3,6 @@ import asyncio
 import aiormq
 from aiormq.abc import DeliveredMessage
 
-
 # Callback-функция, вызываемая на каждое сообщение для консьюмера
 async def on_message(message: DeliveredMessage):
     print(message.body.decode())
