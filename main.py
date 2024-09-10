@@ -24,7 +24,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# Функция конфигурирования и запуска бота
+# Функция конфигурирования и последующего запуска бота
 async def main() -> None:
     # Загружаем конфиг в переменную config
     config: Config = load_config()
