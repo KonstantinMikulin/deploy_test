@@ -10,10 +10,10 @@ from nats.aio.msg import Msg
 async def on_message(msg: Msg):
     # Get timestamp and delay from headers
     sent_time = datetime.fromtimestamp(
-        float(msg.headers.get("Tg-Delayed-Msg-Timestamp")), tz=timezone.utc
+        float(msg.headers.get("Tg-Delayed-Msg-Timestamp")), tz=timezone.utc #type:ignore
     )
-    delay = int(msg.headers.get("Tg-Daleyed-Msg-Delay"))
-    
+    delay = int(msg.headers.get("Tg-Daleyed-Msg-Delay"))  # type:ignore
+
     # Check if it is time for msg processing
     if sent_time + timedelta(seconds=delay) > datetime.now().astimezone():
         # If not time for processing, calculate how much time left before processing
