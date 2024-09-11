@@ -1,7 +1,7 @@
 from aiogram import Router, html
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
-from fluentogram import TranslatorRunner
+from fluentogram import TranslatorRunner #type:ignore
 from services.delay_service.publisher import delay_message_deletion
 
 from nats.js.client import JetStreamContext
@@ -13,7 +13,7 @@ user_router = Router()
 # Этот хэндлер будет срабатывать на команду /start
 @user_router.message(CommandStart())
 async def process_start_command(message: Message, i18n: TranslatorRunner):
-    username = html.quote(message.from_user.full_name)
+    username = html.quote(message.from_user.full_name)  # type:ignore
     await message.answer(text=i18n.hello.user(username=username))
 
 

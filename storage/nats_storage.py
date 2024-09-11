@@ -48,7 +48,7 @@ class NatsStorage(BaseStorage):
             config=KeyValueConfig(
                 bucket=self.fsm_states_bucket,
                 history=5,
-                storage='file'
+                storage="file",  # type:ignore
             )
         )
         
@@ -57,7 +57,7 @@ class NatsStorage(BaseStorage):
             config=KeyValueConfig(
                 bucket=self.fsm_data_bucket,
                 history=5,
-                storage='file'
+                storage="file",  # type:ignore
             )
         )
         
@@ -68,7 +68,7 @@ class NatsStorage(BaseStorage):
     async def get_state(self, key: StorageKey) -> Optional[str]:
         try:
             entry = await self.kv_states.get(self._key_builder.build(key))
-            data = ormsgpack.unpackb(entry.value)
+            data = ormsgpack.unpackb(entry.value)  # type:ignore
         except NotFoundError:
             return None
         
@@ -80,7 +80,7 @@ class NatsStorage(BaseStorage):
     async def get_data(self, key: StorageKey) -> dict[str, Any]:
         try:
             entry = await self.kv_data.get(self._key_builder.build(key))
-            return ormsgpack.unpackb(entry.value)
+            return ormsgpack.unpackb(entry.value)  # type:ignore
         except NotFoundError:
             return {}
         

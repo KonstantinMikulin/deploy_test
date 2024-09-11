@@ -41,9 +41,10 @@ class DelayedMessageConsumer:
     async def on_message(self, msg: Msg):
         # Получаем из заголовков сообщения время отправки и время задержки
         sent_time = datetime.fromtimestamp(
-            float(msg.headers.get("Tg-Delayed-Msg-Timestamp")), tz=timezone.utc
+            float(msg.headers.get("Tg-Delayed-Msg-Timestamp")),  # type:ignore
+            tz=timezone.utc,
         )
-        delay = int(msg.headers.get("Tg-Delayed-Msg-Delay"))
+        delay = int(msg.headers.get("Tg-Delayed-Msg-Delay"))  # type:ignore
 
         # Проверяем наступило ли время обработки сообщения
         if sent_time + timedelta(seconds=delay) > datetime.now().astimezone():
@@ -57,11 +58,12 @@ class DelayedMessageConsumer:
             await msg.nak(delay=new_delay)
         else:
             # Если время обработки наступило - пытаемся удалить сообщение в чате
-            chat_id = msg.headers.get("Tg-Delayed-Chat-ID")
-            message_id = msg.headers.get("Tg-Delayed-Msg-ID")
+            chat_id = msg.headers.get("Tg-Delayed-Chat-ID")  # type:ignore
+            message_id = msg.headers.get("Tg-Delayed-Msg-ID")  # type:ignore
             with suppress(TelegramBadRequest):
                 await self.bot.delete_message(
-                    chat_id=chat_id, message_id=message_id
+                    chat_id=chat_id,  # type:ignore
+                    message_id=message_id,  # type:ignore
                 )
             await msg.ack()
 
