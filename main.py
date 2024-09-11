@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from config_data.config import Config, load_config
-from fluentogram import TranslatorHub #type:ignore
+from fluentogram import TranslatorHub
 from handlers.other import other_router
 from handlers.user import user_router
 from middlewares.i18n import TranslatorRunnerMiddleware
@@ -24,13 +24,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# Функция конфигурирования и последующего запуска бота
+# Функция конфигурирования и запуска бота
 async def main() -> None:
     # Загружаем конфиг в переменную config
     config: Config = load_config()
-    
-    # Подключаемся к NATS
-    nc, js = await connect_to_nats(servers=config.nats.servers)
 
     # Инициализируем бот и диспетчер
     bot = Bot(
@@ -38,6 +35,9 @@ async def main() -> None:
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
     dp = Dispatcher()
+
+    # Подключаемся к NATS и получаем ссылки на клиент и JetStream-контекст
+    nc, js = await connect_to_nats(servers=config.nats.servers)
 
     # Создаем объект типа TranslatorHub
     translator_hub: TranslatorHub = create_translator_hub()
@@ -49,14 +49,14 @@ async def main() -> None:
     # Регистрируем миддлварь для i18n
     dp.update.middleware(TranslatorRunnerMiddleware())
 
-    # Запускаем polling
+    # Запускаем polling и консьюмер отложенного удаления сообщений
     try:
-        asyncio.gather(
+        await asyncio.gather(
             dp.start_polling(
                 bot,
                 js=js,
                 delay_del_subject=config.delayed_consumer.subject,
-                _translator_hub=translator_hub
+                _translator_hub=translator_hub,
             ),
             start_delayed_consumer(
                 nc=nc,
@@ -64,14 +64,14 @@ async def main() -> None:
                 bot=bot,
                 subject=config.delayed_consumer.subject,
                 stream=config.delayed_consumer.stream,
-                durable_name=config.delayed_consumer.durable_name
-            )
+                durable_name=config.delayed_consumer.durable_name,
+            ),
         )
     except Exception as e:
         logger.exception(e)
     finally:
         await nc.close()
-        logger.info('Connection to NATS closed')
+        logger.info("Connection to NATS closed")
 
 
 asyncio.run(main())

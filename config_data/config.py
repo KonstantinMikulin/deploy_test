@@ -5,13 +5,13 @@ from environs import Env
 @dataclass
 class TgBot:
     token: str  # Токен для доступа к телеграм-боту
-    
-    
+
+
 @dataclass
 class NatsConfig:
     servers: list[str]
-    
-    
+
+
 @dataclass
 class NatsDelayedConsumerConfig:
     subject: str
@@ -35,6 +35,6 @@ def load_config(path: str | None = None) -> Config:
         delayed_consumer=NatsDelayedConsumerConfig(
             subject=env("NATS_DELAYED_CONSUMER_SUBJECT"),
             stream=env("NATS_DELAYED_CONSUMER_STREAM"),
-            durable_name=env("NATS_DELAYED_CONSUMER_DURABLE_NAME")
+            durable_name=env("NATS_DELAYED_CONSUMER_DURABLE_NAME"),
         ),
     )

@@ -1,7 +1,7 @@
 from aiogram import Router, html
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
-from fluentogram import TranslatorRunner #type:ignore
+from fluentogram import TranslatorRunner
 from services.delay_service.publisher import delay_message_deletion
 
 from nats.js.client import JetStreamContext
