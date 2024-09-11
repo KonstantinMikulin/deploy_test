@@ -1,72 +1,37 @@
-from aiogram import F, Router, html
-from aiogram.filters import Command, CommandStart, StateFilter
-from aiogram.fsm.context import FSMContext
-from aiogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from aiogram import Router, html
+from aiogram.filters import Command, CommandStart
+from aiogram.types import Message
 from fluentogram import TranslatorRunner #type:ignore
-from states.states import NatsTestSG
+from services.delay_service.publisher import delay_message_deletion
+
+from nats.js.client import JetStreamContext
 
 # Инициализируем роутер уровня модуля
 user_router = Router()
 
 
-# Этот хэндлер срабатывает на команду /start
+# Этот хэндлер будет срабатывать на команду /start
 @user_router.message(CommandStart())
-async def process_start_command(message: Message, i18n: TranslatorRunner, state: FSMContext):
-    username = html.quote(message.from_user.full_name)  # type:ignore
-    # Создаем объект инлайн-кнопки
-    button = InlineKeyboardButton(text=i18n.button.button(), callback_data="button_pressed")
-    # Создаем объект инлайн-клавиатуры
-    markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
-    
-    # Отправляем сообщение пользователю
-    await message.answer(text=i18n.hello.user(username=username), reply_markup=markup)
-    
-    # Устанавливаем состояние пользователя в состояние по умочанию
-    await state.set_state()
-    
-    
-# Хэндлер на команду /update
-@user_router.message(Command(commands='update'))
-async def process_update_command(message: Message, i18n: TranslatorRunner, state: FSMContext):
-    # Отправляем пользователю сообщение с предложением прислать любой текст
-    await message.answer(text=i18n.send.text())
-    # Устанавлием состояние ожидания ввода текста
-    await state.set_state(NatsTestSG.enter_text)
-    
-    
-# Хэндлер на команду /read
-@user_router.message(Command(commands='read'))
-async def process_read_command(message: Message, state: FSMContext):
-    # Получаем FSM data
-    data = await state.get_data()
-    # Отправляем в телеграм строкое представление FSM data
-    await message.answer(text=str(data))
-    
-    
-# Хэндлер на любой текст в состоянии `NatsTestSG.enter_text`
-@user_router.message(F.text, StateFilter(NatsTestSG.enter_text))
-async def process_text_message(message: Message, i18n: TranslatorRunner, state: FSMContext):
-    # Обновляем FSM data
-    await state.update_data(text_data=message.text)
-    # Отправляем пользователю сообщение о том, что текст успешно сохранен
-    await message.answer(text=i18n.successfully.saved())
-    # Возвращаем состояние в стостояние по умолчанию
-    await state.set_state()
+async def process_start_command(message: Message, i18n: TranslatorRunner):
+    username = html.quote(message.from_user.full_name)
+    await message.answer(text=i18n.hello.user(username=username))
 
 
-# Хэндлер на любое нетекстовое сообщение в состоянии `NatsTestSG.enter_text`
-@user_router.message(StateFilter(NatsTestSG.enter_text))
-async def process_any_message(message: Message, i18n: TranslatorRunner, state: FSMContext):
-    # Отправляем пользователю сообщение о том, что ожидаем только текст
-    await message.answer(text=i18n.text.only())
+# Этот хэндлер будет срабатывать на команду /del
+@user_router.message(Command("del"))
+async def send_and_del_message(
+    message: Message,
+    i18n: TranslatorRunner,
+    js: JetStreamContext,
+    delay_del_subject: str,
+) -> None:
+    delay = 3
+    msg: Message = await message.answer(text=i18n.will.delete(delay=delay))
 
-
-# Этот хэндлер срабатывает на нажатие инлайн-кнопки
-@user_router.callback_query(F.data == "button_pressed")
-async def process_button_click(callback: CallbackQuery, i18n: TranslatorRunner):
-    await callback.answer(text=i18n.button.pressed())
+    await delay_message_deletion(
+        js=js,
+        chat_id=msg.chat.id,
+        message_id=msg.message_id,
+        subject=delay_del_subject,
+        delay=delay,
+    )
