@@ -9,9 +9,9 @@ from fluentogram import TranslatorHub #type:ignore
 from handlers.other import other_router
 from handlers.user import user_router
 from middlewares.i18n import TranslatorRunnerMiddleware
-from storage.nats_storage import NatsStorage
 from utils.i18n import create_translator_hub
 from utils.nats_connect import connect_to_nats
+from utils.start_consumers import start_delayed_consumer
 
 # Настраиваем базовую конфигурацию логирования
 logging.basicConfig(
@@ -31,16 +31,13 @@ async def main() -> None:
     
     # Подключаемся к NATS
     nc, js = await connect_to_nats(servers=config.nats.servers)
-    
-    # Инициализация хранилища на базе NATS
-    storage: NatsStorage = await NatsStorage(nc=nc, js=js).create_storage()
 
     # Инициализируем бот и диспетчер
     bot = Bot(
         token=config.tg_bot.token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
-    dp = Dispatcher(storage=storage)
+    dp = Dispatcher()
 
     # Создаем объект типа TranslatorHub
     translator_hub: TranslatorHub = create_translator_hub()
@@ -54,13 +51,27 @@ async def main() -> None:
 
     # Запускаем polling
     try:
-        await dp.start_polling(bot, _translator_hub=translator_hub)
+        asyncio.gather(
+            dp.start_polling(
+                bot,
+                js=js,
+                delay_del_subject=config.delayed_consumer.subject,
+                _translator_hub=translator_hub
+            ),
+            start_delayed_consumer(
+                nc=nc,
+                js=js,
+                bot=bot,
+                subject=config.delayed_consumer.subject,
+                stream=config.delayed_consumer.stream,
+                durable_name=config.delayed_consumer.durable_name
+            )
+        )
     except Exception as e:
         logger.exception(e)
     finally:
-        # Закрываем соединение с NATS
         await nc.close()
-        logger.info('Connection to NATS was closed')
+        logger.info('Connection to NATS closed')
 
 
 asyncio.run(main())
