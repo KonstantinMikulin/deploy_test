@@ -33,7 +33,7 @@ async def cmd_select(message: Message, db_engine: AsyncEngine):
         select("*").select_from(users_table),
         select("*")
         .select_from(users_table)
-        .where(users_table.c.first_name == "Groosha"),
+        .where(users_table.c.first_name == "Konstantin"),
         select(users_table.c.telegram_id, users_table.c.first_name).select_from(
             users_table
         ),
