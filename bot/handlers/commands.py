@@ -13,11 +13,11 @@ router = Router(name="commands router")
 @router.message(CommandStart())
 async def cmd_start(message: Message, db_engine: AsyncEngine):
     stmt = insert(users_table).values(
-        telegram_id=message.from_user.id,
-        first_name=message.from_user.first_name,
-        last_name=message.from_user.last_name,
+        telegram_id=message.from_user.id,  # type:ignore
+        first_name=message.from_user.first_name,  # type:ignore
+        last_name=message.from_user.last_name,  # type:ignore
     )
-    do_ignore = stmt.on_conflict_do_nothing(index_elements=["telegram_id"])
+    do_ignore = stmt.on_conflict_do_nothing(index_elements=["telegram_id"])  # type:ignore
     async with db_engine.connect() as conn:
         await conn.execute(do_ignore)
         await conn.commit()
@@ -54,7 +54,7 @@ async def cmd_select(message: Message, db_engine: AsyncEngine):
 @router.message(Command("deleteme"))
 async def cmd_deleteme(message: Message, db_engine: AsyncEngine):
     stmt = delete(users_table).where(
-        users_table.c.telegram_id == message.from_user.id
+        users_table.c.telegram_id == message.from_user.id  # type:ignore
     )
     async with db_engine.connect() as conn:
         await conn.execute(stmt)

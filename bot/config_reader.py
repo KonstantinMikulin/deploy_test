@@ -3,7 +3,7 @@ from os import getenv
 from typing import TypeVar, Type
 
 from pydantic import BaseModel, SecretStr, PostgresDsn
-from yaml import load
+from yaml import load  # type:ignore
 
 try:
     from yaml import CSafeLoader as SafeLoader
