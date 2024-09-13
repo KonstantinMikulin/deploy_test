@@ -18,4 +18,8 @@ class User(Base):
     last_name: Mapped[str | None] = mapped_column()
     
     
+async def main():
+    engine = create_engine(
+        
+    )
     
