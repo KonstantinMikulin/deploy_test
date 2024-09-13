@@ -12,7 +12,7 @@ from bot.handlers import get_routers
 async def main():
     # В get_config передаются два аргумента:
     # 1. Модель Pydantic, в которую будет преобразована часть конфига
-    # 2. Корневой "ключ", из которого данные читаются и накладываются на модель
+    # 2. Корневой "ключ", из которого данные читаются и накладываются на модель 
     db_config = get_config(DbConfig, "db")
 
     engine = create_async_engine(
