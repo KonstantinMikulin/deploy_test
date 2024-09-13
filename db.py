@@ -20,6 +20,18 @@ class User(Base):
     
 async def main():
     engine = create_engine(
-        
+        # Строка подключения при использовании Docker-образов из репозитория
+        # В противном случае подставьте свои значения
+        url="postgresql+psycopg://superuser:superpassword@127.0.0.1/data",
+        echo=False
     )
+
+    # Печатает на экран SQL-запрос для создания таблицы в PostgreSQL
+    print(CreateTable(User.__table__).compile(dialect=postgresql.dialect()))
     
+    # Удаление предыдущей версии базы и создания таблиц заново
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+
+if __name__ == '__main__':
+    asyncio.run(main())
