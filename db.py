@@ -1,10 +1,8 @@
 import asyncio
 
 from sqlalchemy import BigInteger, DateTime, Text, func
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.schema import CreateTable
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine, async_sessionmaker
 
 from datetime import datetime
 
@@ -27,10 +25,10 @@ class User(Base):
     
     
 async def create_user(
-    engine: AsyncEngine,
+    sessionmaker: async_sessionmaker,
     telegram_id: int,
     first_name: str,
-    last_name: str | None = None
+    last_name: str | None = None,
 ):
     user = User(
         telegram_id=telegram_id,
@@ -38,7 +36,7 @@ async def create_user(
         last_name=last_name
     )
     
-    async with AsyncSession(engine, expire_on_commit=False) as session:
+    async with sessionmaker() as session:
         session.add(user)
         await session.commit()
         print(user.created_at)
@@ -58,12 +56,16 @@ async def main():
         await connection.run_sync(Base.metadata.drop_all)
         await connection.run_sync(Base.metadata.create_all)
         
+    # async_sessionmaker – это класс, просто его название в SQLAlchemy
+    # нарушает PEP 8 по именованию таких объектов
+    Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
+        
     # Create first user
     await create_user(
-        engine=engine,
+        sessionmaker=Sessionmaker,
         telegram_id=12345,
-        first_name='Linus',
-        last_name='Torvalds'
+        first_name="Linus",
+        last_name="Torvalds",
     )
     
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -71,9 +73,9 @@ async def main():
     
     # Create second user without last name
     await create_user(
-        engine=engine,
+        sessionmaker=Sessionmaker,
         telegram_id=98765,
-        first_name='Jack'
+        first_name="Jack"
     )
 
 if __name__ == '__main__':
