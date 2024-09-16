@@ -2,7 +2,7 @@ import asyncio
 
 from sqlalchemy import BigInteger, DateTime, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from datetime import datetime
 
@@ -63,9 +63,9 @@ async def main():
     # Create first user
     await create_user(
         sessionmaker=Sessionmaker,
-        telegram_id=12345,
-        first_name="Linus",
-        last_name="Torvalds",
+        telegram_id=1000,
+        first_name="John",
+        last_name="Preston",
     )
     
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -74,8 +74,25 @@ async def main():
     # Create second user without last name
     await create_user(
         sessionmaker=Sessionmaker,
-        telegram_id=98765,
+        telegram_id=20000,
+        first_name="Alex",
+        last_name='Craig'
+    )
+    
+    await create_user(
+        sessionmaker=Sessionmaker,
+        telegram_id=30000,
         first_name="Jack"
+    )
+
+    # Сделаем небольшую паузу, чтобы были разные отметки времени
+    await asyncio.sleep(1)
+    
+    await create_user(
+        sessionmaker=Sessionmaker,
+        telegram_id=40000,
+        first_name="Alex",
+        last_name="Davis",
     )
 
 if __name__ == '__main__':
