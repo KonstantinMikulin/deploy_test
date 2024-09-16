@@ -1,10 +1,12 @@
 import asyncio
 
-from sqlalchemy import BigInteger, String
+from sqlalchemy import BigInteger, DateTime, Text, func
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import CreateTable
+
+from datetime import datetime
 
 
 class Base(DeclarativeBase):
@@ -15,8 +17,13 @@ class User(Base):
     __tablename__ = 'users'
     
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    first_name: Mapped[str] = mapped_column(String)
-    last_name: Mapped[str | None] = mapped_column(String)
+    first_name: Mapped[str] = mapped_column(Text, nullable=False)
+    last_name: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now()
+    )
     
     
 async def main():
