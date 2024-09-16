@@ -2,7 +2,6 @@ import asyncio
 
 from sqlalchemy import BigInteger, DateTime, Text, func
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import CreateTable
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
@@ -39,9 +38,10 @@ async def create_user(
         last_name=last_name
     )
     
-    async with AsyncSession(engine) as session:
+    async with AsyncSession(engine, expire_on_commit=False) as session:
         session.add(user)
         await session.commit()
+        print(user.created_at)
     
     
 async def main():
@@ -75,9 +75,6 @@ async def main():
         telegram_id=98765,
         first_name='Jack'
     )
-    
-    # Печатает на экран SQL-запрос для создания таблицы в PostgreSQL
-    print(CreateTable(User.__table__).compile(dialect=postgresql.dialect()))
 
 if __name__ == '__main__':
     asyncio.run(main())
