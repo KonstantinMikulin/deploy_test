@@ -5,6 +5,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.schema import CreateTable
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
 from datetime import datetime
 
@@ -26,20 +27,57 @@ class User(Base):
     )
     
     
+async def create_user(
+    engine: AsyncEngine,
+    telegram_id: int,
+    first_name: str,
+    last_name: str | None = None
+):
+    user = User(
+        telegram_id=telegram_id,
+        first_name=first_name,
+        last_name=last_name
+    )
+    
+    async with AsyncSession(engine) as session:
+        session.add(user)
+        await session.commit()
+    
+    
 async def main():
-    engine = create_engine(
+    engine = create_async_engine(
         # Строка подключения при использовании Docker-образов из репозитория
         # В противном случае подставьте свои значения
         url="postgresql+psycopg://superuser:superpassword@127.0.0.1/data",
         echo=False
     )
 
+    # Удаление предыдущей версии базы
+    # и создание таблиц заново
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
+        await connection.run_sync(Base.metadata.create_all)
+        
+    # Create first user
+    await create_user(
+        engine=engine,
+        telegram_id=12345,
+        first_name='Linus',
+        last_name='Torvalds'
+    )
+    
+    # Сделаем небольшую паузу, чтобы были разные отметки времени
+    await asyncio.sleep(1)
+    
+    # Create second user without last name
+    await create_user(
+        engine=engine,
+        telegram_id=98765,
+        first_name='Jack'
+    )
+    
     # Печатает на экран SQL-запрос для создания таблицы в PostgreSQL
     print(CreateTable(User.__table__).compile(dialect=postgresql.dialect()))
-    
-    # Удаление предыдущей версии базы и создания таблиц заново
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
 
 if __name__ == '__main__':
     asyncio.run(main())
