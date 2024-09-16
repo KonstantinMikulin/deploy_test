@@ -17,11 +17,7 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     first_name: Mapped[str] = mapped_column(Text, nullable=False)
     last_name: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        nullable=False,
-        server_default=func.now()
-    )
+    created_at: Mapped[int] = mapped_column(BigInteger, nullable=False)
     
     def __repr__(self) -> str:
         if self.last_name is None:
@@ -37,11 +33,13 @@ async def create_user(
     telegram_id: int,
     first_name: str,
     last_name: str | None = None,
+    created_at: int | None = None
 ):
     user = User(
         telegram_id=telegram_id,
         first_name=first_name,
-        last_name=last_name
+        last_name=last_name,
+        created_at=created_at
     )
     
     async with sessionmaker() as session:
@@ -83,6 +81,7 @@ async def main():
         telegram_id=1000,
         first_name="John",
         last_name="Preston",
+        created_at=2022
     )
     
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -93,13 +92,15 @@ async def main():
         sessionmaker=Sessionmaker,
         telegram_id=20000,
         first_name="Alex",
-        last_name='Craig'
+        last_name='Craig',
+        created_at=2023
     )
     
     await create_user(
         sessionmaker=Sessionmaker,
         telegram_id=30000,
-        first_name="Jack"
+        first_name="Jack",
+        created_at=2024
     )
 
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -110,6 +111,7 @@ async def main():
         telegram_id=40000,
         first_name="Alex",
         last_name="Davis",
+        created_at=2024
     )
     
     user_1000 = await get_user(Sessionmaker, 30000)
