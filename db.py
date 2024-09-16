@@ -23,6 +23,14 @@ class User(Base):
         server_default=func.now()
     )
     
+    def __repr__(self) -> str:
+        if self.last_name is None:
+            name = self.first_name
+        else:
+            name = f'{self.first_name} {self.last_name}'
+        return f"[{self.telegram_id} {name}]"     
+        
+    
     
 async def create_user(
     sessionmaker: async_sessionmaker,
@@ -40,6 +48,15 @@ async def create_user(
         session.add(user)
         await session.commit()
         print(user.created_at)
+        
+        
+async def get_user(
+    sessionmaker: async_sessionmaker,
+    telegram_id: int
+) -> User | None:
+    async with sessionmaker() as session:
+        result = await session.get(User, telegram_id)
+    return result
     
     
 async def main():
@@ -94,6 +111,9 @@ async def main():
         first_name="Alex",
         last_name="Davis",
     )
+    
+    user_1000 = await get_user(Sessionmaker, 30000)
+    print(user_1000)
 
 if __name__ == '__main__':
     asyncio.run(main())
