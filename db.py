@@ -1,10 +1,9 @@
 import asyncio
+from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Text, func
+from sqlalchemy import BigInteger, Text, DateTime, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-
-from datetime import datetime
 
 
 class Base(DeclarativeBase):
@@ -17,14 +16,14 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     first_name: Mapped[str] = mapped_column(Text, nullable=False)
     last_name: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     
     def __repr__(self) -> str:
         if self.last_name is None:
             name = self.first_name
         else:
             name = f'{self.first_name} {self.last_name}'
-        return f"[{self.telegram_id} {name}]"     
+        return f"[{self.telegram_id}] {name}"     
         
     
     
@@ -33,7 +32,7 @@ async def create_user(
     telegram_id: int,
     first_name: str,
     last_name: str | None = None,
-    created_at: int | None = None
+    created_at: datetime | None = None
 ):
     user = User(
         telegram_id=telegram_id,
@@ -53,9 +52,24 @@ async def get_user(
     telegram_id: int
 ) -> User | None:
     async with sessionmaker() as session:
-        result = await session.get(User, telegram_id)
-    return result
+        stmt = select(User).where(User.telegram_id == telegram_id)
+        result = await session.execute(stmt)
+    return result.scalar()
+
+
+async def get_user_by_year(
+    sessionmaker: async_sessionmaker,
+    year: int
+):
+    first_dat_of_year = datetime(year, 1, 1)
     
+    stmt = (
+        select(User).where(User.created_at < first_dat_of_year)
+    )
+    
+    async with sessionmaker() as session:
+        result = await session.execute(stmt)
+    return result.scalars()
     
 async def main():
     engine = create_async_engine(
@@ -81,7 +95,7 @@ async def main():
         telegram_id=1000,
         first_name="John",
         last_name="Preston",
-        created_at=2022
+        created_at=datetime(2022, 3, 4)
     )
     
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -92,15 +106,15 @@ async def main():
         sessionmaker=Sessionmaker,
         telegram_id=20000,
         first_name="Alex",
-        last_name='Craig',
-        created_at=2023
+        last_name="Craig",
+        created_at=datetime(2023, 6, 8)
     )
     
     await create_user(
         sessionmaker=Sessionmaker,
         telegram_id=30000,
         first_name="Jack",
-        created_at=2024
+        created_at=datetime(2024, 6, 10)
     )
 
     # Сделаем небольшую паузу, чтобы были разные отметки времени
@@ -111,11 +125,12 @@ async def main():
         telegram_id=40000,
         first_name="Alex",
         last_name="Davis",
-        created_at=2024
+        created_at=datetime(2024, 6, 11)
     )
     
-    user_1000 = await get_user(Sessionmaker, 30000)
-    print(user_1000)
+    # users_before_24 = await get_user_by_year(Sessionmaker, 2024)
+    # for user in users_before_24:
+    #     print(user)
 
 if __name__ == '__main__':
     asyncio.run(main())
