@@ -72,7 +72,15 @@ async def main():
         last_name='Cook',
         created_at=datetime(2022, 3, 6)
     )
-
-
+    
+    stmt = select(User).where(User.telegram_id == 5000)
+    async with Sessionmaker() as session:
+        result = await session.execute(stmt)
+        tim = result.scalar()
+        tim.first_name = 'Bill'
+        tim.last_name = None
+        
+        await session.commit()
+        
 if __name__ == '__main__':
     asyncio.run(main())
