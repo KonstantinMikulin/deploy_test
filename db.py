@@ -128,9 +128,9 @@ async def main():
         created_at=datetime(2024, 6, 11)
     )
     
-    # users_before_24 = await get_user_by_year(Sessionmaker, 2024)
-    # for user in users_before_24:
-    #     print(user)
+    users_before_24 = await get_user_by_year(Sessionmaker, 2024)
+    for user in users_before_24:
+        print(user)
 
 if __name__ == '__main__':
     asyncio.run(main())
