@@ -23,7 +23,14 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "users"
 
-    telegram_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    # Теперь первичным ключом становитcя автогенерируемый UUID
+    id: Mapped[UUID] = mapped_column(
+        Uuid,
+        primary_key=True,
+        server_default=text('gen_random_uuid()')
+    )
+    # telegram_id перестаёт быть первичным ключом
+    telegram_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     first_name: Mapped[str] = mapped_column(Text, nullable=False)
     last_name: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -40,14 +47,14 @@ class Game(Base):
         Uuid, primary_key=True, server_default=text("gen_random_uuid()")
     )
     score: Mapped[int] = mapped_column(Integer, nullable=False)
+    # played_by теперь ссылается на users.id, а не на users.telegram_id
+    played_by: Mapped[UUID] = mapped_column(Uuid, ForeignKey("users.id"))
     played_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now(),
     )
-    played_by: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.telegram_id")
-    )
+    
 
 
 async def main():
@@ -69,10 +76,15 @@ async def main():
     async with Sessionmaker() as session:
         user_1 = User(telegram_id=1, first_name="Alex")
         user_2 = User(telegram_id=2, first_name="Alice", last_name="Smith")
-        game_1 = Game(score=50, played_by=user_1.telegram_id)
-        game_2 = Game(score=26, played_by=user_1.telegram_id)
-        game_3 = Game(score=0, played_by=user_2.telegram_id)
-        session.add_all([user_1, user_2, game_1, game_2, game_3])
+        # юзеры добавляются в сессию сразу же
+        session.add_all([user_1, user_2])
+        # отправка записей в СУБД, но транзакция не закрывается
+        await session.flush()
+        game_1 = Game(score=50, played_by=user_1.id)
+        game_2 = Game(score=26, played_by=user_1.id)
+        game_3 = Game(score=0, played_by=user_2.id)
+        session.add_all([game_1, game_2, game_3])
+        # теперь происходит окончательная фиксация данных
         await session.commit()
 
     
