@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Text, DateTime, select
+from sqlalchemy import BigInteger, Text, DateTime, select, or_, and_    
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
@@ -57,7 +57,7 @@ async def get_user(
     return result.scalar()
 
 
-async def get_user_by_year(
+async def get_users_by_year(
     sessionmaker: async_sessionmaker,
     year: int
 ):
@@ -70,6 +70,19 @@ async def get_user_by_year(
     async with sessionmaker() as session:
         result = await session.execute(stmt)
     return result.scalars()
+    
+
+async def get_elite_users(
+    sessionmaker: async_sessionmaker
+):
+    stmt = select(User).where(and_(
+        User.created_at < datetime(2024, 1, 1), User.telegram_id < 1_000_000
+        )
+    )
+    async with sessionmaker() as session:
+        result = await session.execute(stmt)
+    return result.scalars()
+
     
 async def main():
     engine = create_async_engine(
@@ -104,7 +117,7 @@ async def main():
     # Create second user without last name
     await create_user(
         sessionmaker=Sessionmaker,
-        telegram_id=20000,
+        telegram_id=20_000,
         first_name="Alex",
         last_name="Craig",
         created_at=datetime(2023, 6, 8)
@@ -112,7 +125,7 @@ async def main():
     
     await create_user(
         sessionmaker=Sessionmaker,
-        telegram_id=30000,
+        telegram_id=3_000_000,
         first_name="Jack",
         created_at=datetime(2024, 6, 10)
     )
@@ -122,14 +135,14 @@ async def main():
     
     await create_user(
         sessionmaker=Sessionmaker,
-        telegram_id=40000,
+        telegram_id=4_000_000,
         first_name="Alex",
         last_name="Davis",
         created_at=datetime(2024, 6, 11)
     )
     
-    users_before_24 = await get_user_by_year(Sessionmaker, 2024)
-    for user in users_before_24:
+    elite_users = await get_elite_users(Sessionmaker)
+    for user in elite_users:
         print(user)
 
 if __name__ == '__main__':
