@@ -58,28 +58,12 @@ async def main():
         echo=False,
     )
     Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
-
-    # Удаление предыдущей версии базы
-    # и создание таблиц заново
-    async with engine.begin() as connection:
-        await connection.run_sync(Base.metadata.drop_all)
-        await connection.run_sync(Base.metadata.create_all)
-
-    await create_user(
-        sessimaker=Sessionmaker,
-        telegram_id=5000,
-        first_name='Tim',
-        last_name='Cook',
-        created_at=datetime(2022, 3, 6)
-    )
     
     stmt = select(User).where(User.telegram_id == 5000)
     async with Sessionmaker() as session:
         result = await session.execute(stmt)
         tim = result.scalar()
-        tim.first_name = 'Bill'
-        tim.last_name = None
-        
+        await session.delete(tim)
         await session.commit()
         
 if __name__ == '__main__':
