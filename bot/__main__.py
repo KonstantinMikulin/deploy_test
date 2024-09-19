@@ -18,6 +18,7 @@ async def main():
     
     engine = create_async_engine(
         url=str(db_config.dsn), # здесь требуется приведение к строке
+        #TODO: check if 'is_echo' will also work
         echo=db_config.echo
     )
     
