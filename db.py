@@ -30,7 +30,10 @@ class User(Base):
     # Чтобы избежать циклических импортов, название модели
     # в Mapped указывайте в кавычках строкой,
     # а значение back_populates ссылается на атрибут в связанной модели
-    games: Mapped[list["Game"]] = relationship(back_populates="user")
+    games: Mapped[list["Game"]] = relationship(
+        back_populates="user",
+        cascade='delete'
+        )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
@@ -46,7 +49,8 @@ class Game(Base):
     )
     score: Mapped[int] = mapped_column(Integer, nullable=False)
     played_by: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.telegram_id")
+        BigInteger,
+        ForeignKey("users.telegram_id", ondelete='CASCADE')
     )
     # здесь атрибут назван user, поэтому выше в back_populates
     # указывается то же самое. Аналогично для "games"
@@ -98,6 +102,9 @@ async def main():
         alex = result.unique().scalar()
         total_score = sum(item.score for item in alex.games)
         print(f"Игрок {alex.first_name} набрал {total_score} очков")
+        
+        await session.delete(alex)
+        await session.commit()
     
     
 # Точка входа
