@@ -101,6 +101,6 @@ async def main():
             print(game)
     
     
-# Точка входа
+# Точка входа _
 if __name__ == "__main__":
     asyncio.run(main())
