@@ -70,35 +70,34 @@ async def main():
 
     # Удаление предыдущей версии базы
     # и создание таблиц заново
-    # async with engine.begin() as connection:
-    #     await connection.run_sync(Base.metadata.drop_all)
-    #     await connection.run_sync(Base.metadata.create_all)
+    async with engine.begin() as connection:
+        await connection.run_sync(Base.metadata.drop_all)
+        await connection.run_sync(Base.metadata.create_all)
 
     Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     
-    # async with Sessionmaker() as session:
-    #     user_1 = User(telegram_id=1, first_name="Alex")
-    #     user_2 = User(telegram_id=2, first_name="Alice", last_name="Smith")
-    #     user_3 = User(telegram_id=3, first_name="Bob", last_name="Marlin")
-    #     session.add_all([user_1, user_2, user_3])
-    #     await session.flush()
-    #     games = [
-    #         Game(score=50, played_by=user_1.telegram_id),
-    #         Game(score=26, played_by=user_1.telegram_id),
-    #         Game(score=0, played_by=user_2.telegram_id),
-    #         Game(score=10, played_by=user_3.telegram_id),
-    #         Game(score=20, played_by=user_3.telegram_id),
-    #     ]
-    #     session.add_all([*games])
-    #     await session.commit()
+    async with Sessionmaker() as session:
+        user_1 = User(telegram_id=1, first_name="Alex")
+        user_2 = User(telegram_id=2, first_name="Alice", last_name="Smith")
+        user_3 = User(telegram_id=3, first_name="Bob", last_name="Marlin")
+        # session.add_all([user_1, user_2, user_3])
+        # await session.flush()
+        games = [
+            Game(score=50, played_by=user_1.telegram_id),
+            Game(score=26, played_by=user_1.telegram_id),
+            Game(score=0, played_by=user_2.telegram_id),
+            Game(score=10, played_by=user_3.telegram_id),
+            Game(score=20, played_by=user_3.telegram_id),
+        ]
+        session.add_all([user_1, user_2, user_3, * games])
+        await session.commit()
 
     async with Sessionmaker() as session:
         stmt = (select(User).where(User.telegram_id == 1).options(selectinload(User.games)))
         result = await session.execute(stmt)
         alex = result.unique().scalar()
-        
-        for game in alex.games:
-            print(game)
+        total_score = sum(item.score for item in alex.games)
+        print(f"Игрок {alex.first_name} набрал {total_score} очков")
     
     
 # Точка входа
