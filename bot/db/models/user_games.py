@@ -20,6 +20,6 @@ class Game(TimestampMixin, Base):
         ForeignKey('users.telegram_id', ondelete='CASCADE')
     )
     score: Mapped[int] = mapped_column(Integer, nullable=False)
-    # created_at наследуется из миксина
+    # created_at наследуется из миксина 
     user: Mapped['User'] = relationship(back_populates='games')
     
