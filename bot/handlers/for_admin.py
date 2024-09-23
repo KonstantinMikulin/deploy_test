@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db.request import get_last_games
+from bot.db.requests import get_last_games
 
 router = Router(name='admin commands router')
 # Фильтр: роутер доступен только chat id, равному admin_id,

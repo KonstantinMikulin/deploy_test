@@ -21,5 +21,4 @@ class Game(TimestampMixin, Base):
     )
     score: Mapped[int] = mapped_column(Integer, nullable=False)
     # created_at наследуется из миксина 
-    user: Mapped['User'] = relationship(back_populates='games')
-    
+    user: Mapped['User'] = relationship(back_populates='games')  # type:ignore

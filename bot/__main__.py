@@ -19,7 +19,7 @@ async def main():
     engine = create_async_engine(
         url=str(db_config.dsn), # здесь требуется приведение к строке
         #TODO: check if 'is_echo' will also work
-        echo=db_config.echo
+        echo=db_config.is_echo
     )
     
     # Проверка соединения с СУБД
@@ -49,8 +49,8 @@ async def main():
     # Создание экземпляра бота
     bot = Bot(token=bot_config.token.get_secret_value())
     
-    await dp.start_polling(bot)
     print('Start polling...')
+    await dp.start_polling(bot)
     
     
 asyncio.run(main())    

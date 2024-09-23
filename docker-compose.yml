@@ -14,7 +14,7 @@ services:
       - POSTGRES_PASSWORD=superpassword
       - POSTGRES_DB=data_for_bot
     volumes:
-      - advanced-course-sqlalchemy-orm-postgres:/var/lib/postgresql/data
+      - advanced-course-sqlalchemy-orm-postgres:/var/lib/postgresql/data_for_bot
 
   pgadmin:
     image: dpage/pgadmin4:8.9
