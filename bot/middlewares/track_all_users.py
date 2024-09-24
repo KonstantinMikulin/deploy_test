@@ -1,8 +1,8 @@
-from typing import Callable, Awaitable, Dict, Any, cast
+from typing import Callable, Awaitable, Dict, Any
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject, Message, User
-from cachetools import TTLCache
+from aiogram.types import TelegramObject, User
+from cachetools import TTLCache #type:ignore
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.requests import upsert_user
@@ -22,9 +22,7 @@ class TrackAllUsersMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        # Говорим IDE, что event на самом деле – Message
-        # event = cast(Message, event)
-        user: User = event.message.from_user
+        user: User = event.message.from_user #type:ignore
         user_id = user.id
 
         # Надо обновить данные пользователя, если он не в кэше
