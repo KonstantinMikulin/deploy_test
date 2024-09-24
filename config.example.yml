@@ -1,8 +1,6 @@
 bot:
   # Токен бота, можно получить у @BotFather
   token: "1234567890:AaBbCcDdEeFfGrOoShALlMmNnOoPpQqRrSs"
-  # Айди администратора бота, число
-  admin_id: 1234567890
 
 db:
   # Строка подключения к базе данных.
