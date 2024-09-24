@@ -73,7 +73,7 @@ async def get_total_score_for_user(
         {'telegram_id': telegram_id},
         options=[selectinload(User.games)]
     )
-    return sum(item.score for item in user.games)
+    return sum(item.score for item in user.games) #type:ignore
     
 async def get_last_games(
     session: AsyncSession,

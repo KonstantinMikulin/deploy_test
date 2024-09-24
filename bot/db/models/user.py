@@ -13,4 +13,4 @@ class User(TimestampMixin, Base):
     last_name: Mapped[str | None] = mapped_column(String, nullable=True)
     # created_at добавляется из миксина
 
-    games: Mapped[list["Game"]] = relationship(back_populates="user") #type:ignore
+    games: Mapped[list["Game"]] = relationship(back_populates="user") #type:ignore  # noqa: F821
