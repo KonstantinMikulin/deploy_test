@@ -1,0 +1,11 @@
+.idea/
+/.mypy_cache
+.venv/
+pycache/
+.env
+test_1.py
+test_2.py
+rabbitmq_data/
+/nui
+/nats
+config.yml
