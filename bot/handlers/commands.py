@@ -39,4 +39,3 @@ async def cms_stats(message: Message, session: AsyncSession):
         telegram_id=message.from_user.id,  #type:ignore
     )
     await message.answer(f"Your total score is {total_score}")
-    
