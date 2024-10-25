@@ -9,3 +9,4 @@ rabbitmq_data/
 /nui
 /nats
 config.yml
+__pycache__/

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from bot.config_reader import get_config, BotConfig, DbConfig
 from bot.db import Base
 from bot.handlers import get_routers
-from bot.middlewares import DbSessionMiddlware, TrackAllUsersMiddleware
+from bot.middlewares import DbSessionMiddleware, TrackAllUsersMiddleware
 
 
 async def main():
