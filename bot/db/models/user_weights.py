@@ -7,9 +7,9 @@ from bot.db import Base
 from bot.db.models.mixins import TimestampMixin
 
 
-class Game(TimestampMixin, Base):
-    __tablename__ = 'games'
-    
+class Weight(TimestampMixin, Base):
+    __tablename__ = 'weights'
+
     id: Mapped[UUID] = mapped_column(
         Uuid, primary_key=True,
         server_default=text("gen_random_uuid()")
@@ -18,7 +18,8 @@ class Game(TimestampMixin, Base):
         BigInteger,
         ForeignKey('users.telegram_id', ondelete='CASCADE')
     )
-    score: Mapped[int] = mapped_column(Integer, nullable=False)
-    
-    user: Mapped['User'] = relationship(back_populates='games')  #type:ignore # noqa: F821
-    
+    weight: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    user: Mapped['User'] = relationship(back_populates='weights')  # type:ignore # noqa: F821
+
+    # created_at will be added from TimestampMixin

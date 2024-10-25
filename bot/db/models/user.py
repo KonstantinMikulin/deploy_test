@@ -12,4 +12,4 @@ class User(TimestampMixin, Base):
     first_name: Mapped[str] = mapped_column(String, nullable=False)
     last_name: Mapped[str | None] = mapped_column(String, nullable=True)
     
-    games: Mapped[list['Game']] = relationship(back_populates='user') #type:ignore  # noqa: F821
+    weights: Mapped[list['Weight']] = relationship(back_populates='user') #type:ignore  # noqa: F821

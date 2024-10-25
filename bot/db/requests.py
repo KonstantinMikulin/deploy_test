@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import insert as upsert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 
-from bot.db.models import User, Game
+from bot.db.models import User, Weight
 
 
 async def upsert_user(
@@ -34,46 +34,46 @@ async def upsert_user(
     await session.commit()
     
     
-async def add_score(
+async def add_weight(
     session: AsyncSession,
     telegram_id: int,
-    score: int
+    weight: int
 ):
-    new_game = Game(
+    new_weight = Weight(
         user_id=telegram_id,
-        score=score
+        weight=weight
     )
     
-    session.add(new_game)
+    session.add(new_weight)
     await session.commit()
 
 
-async def get_total_score_for_user(
+async def get_total_weight_for_user(
     session: AsyncSession,
     telegram_id: int
 ) -> int:
     user = await session.get(
         User,
         {'telegram_id': telegram_id},
-        options=[selectinload(User.games)]
+        options=[selectinload(User.weights)]
     )
 
-    return sum(item.score for item in user.games)
+    return sum(item.weight for item in user.weights)
 
 
-async def get_last_games(
+async def get_last_weights(
     session: AsyncSession,
-    number_of_games: int
-) -> list[Game]:
+    number_of_weights: int
+) -> list[Weight]:
     stmt = (
-        select(Game)
-        .order_by(Game.created_at.desc())
-        .limit(number_of_games)
-        .options(joinedload(Game.user))
+        select(Weight)
+        .order_by(Weight.created_at.desc())
+        .limit(number_of_weights)
+        .options(joinedload(Weight.user))
     )
     result = await session.execute(stmt)
-    games = result.scalars().all()
-    games = cast(list[Game], games)
+    weights = result.scalars().all()
+    weights = cast(list[Weight], weights)
     
-    return games
+    return weights
     

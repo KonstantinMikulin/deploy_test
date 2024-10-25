@@ -1,7 +1,7 @@
 from .user import User
-from .user_games import Game
+from .user_weights import Weight
 
 __all__ = [
     'User',
-    'Game'
+    'Weight'
 ]

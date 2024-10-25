@@ -3,7 +3,7 @@ from aiogram.filters import Command, MagicData
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db.requests import get_last_games
+from bot.db.requests import get_last_weights
 
 router = Router(name='admin commands router')
 router.message.filter(MagicData(F.event.chat.id == F.admin_id))
@@ -11,13 +11,13 @@ router.message.filter(MagicData(F.event.chat.id == F.admin_id))
 
 @router.message(Command('last3'))
 async def cmd_last3(message: Message, session: AsyncSession):
-    games = await get_last_games(
+    weights = await get_last_weights(
         session=session,
-        number_of_games=3
+        number_of_weights=3
     )
-    result = ['Last 3 games:\n']
+    result = ['Last 3 weights:\n']
     
-    for game in games:
-        result.append(f"{game.user.first_name} get {game.score} score")
+    for weight in weights:
+        result.append(f"{weight.user.first_name} get {weight.weight} weight")
         
     await message.answer("\n".join(result))
