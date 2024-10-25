@@ -1,7 +1,6 @@
 from asyncio import sleep
 
 from aiogram import Router
-from aiogram.enums.dice_emoji import DiceEmoji
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 
@@ -14,15 +13,12 @@ router = Router(name='commands router')
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer('Hi! Press /play')
+    await message.answer('Hi! Press /add')
     
     
-@router.message(Command('play'))
-async def cmd_warn(message: Message, session: AsyncSession):
-    dice_msg = await message.answer_dice(emoji=DiceEmoji.DICE)
-    
-    weight = dice_msg.dice.value #type:ignore
-    
+@router.message(Command('add'))
+async def cmd_add_weight(message: Message, session: AsyncSession):
+
     await add_weight(
         session=session,
         telegram_id=message.from_user.id,  #type:ignore
