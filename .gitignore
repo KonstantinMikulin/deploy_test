@@ -9,3 +9,4 @@ rabbitmq_data/
 /nats
 config.yml
 __pycache__/
+.idea/
