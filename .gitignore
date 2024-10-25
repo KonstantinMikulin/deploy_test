@@ -1,7 +1,6 @@
-.idea/
 /.mypy_cache
 .venv/
-pycache/
+__pycache__/
 .env
 test_1.py
 test_2.py
