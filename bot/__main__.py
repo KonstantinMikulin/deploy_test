@@ -1,6 +1,8 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram_dialog import setup_dialogs
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
@@ -8,6 +10,7 @@ from bot.config_reader import get_config, BotConfig, DbConfig
 from bot.db import Base
 from bot.handlers import get_routers
 from bot.middlewares import DbSessionMiddleware, TrackAllUsersMiddleware
+from bot.agrm_dialogs import add_weight_dialog
 
 
 async def main():
@@ -43,6 +46,8 @@ async def main():
     dp.message.outer_middleware(TrackAllUsersMiddleware())
 
     dp.include_routers(*get_routers())
+    dp.include_router(add_weight_dialog)
+    setup_dialogs(dp)
     bot = Bot(token=bot_config.token.get_secret_value())
 
     print("Starting polling...")
