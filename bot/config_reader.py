@@ -25,7 +25,7 @@ class DbConfig(BaseModel):
     
 @lru_cache(maxsize=1)
 def parse_config_file() -> dict:
-    file_path = getenv('BOT_CONFIG')
+    file_path = getenv('BOT_DB_CONFIG')
     
     if file_path is None:
         error = 'Could not find settings file'

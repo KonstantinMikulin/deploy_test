@@ -23,7 +23,7 @@ async def upsert_user(
     )
     
     stmt = stmt.on_conflict_do_update(
-        index_elements['telegram_id'],
+        index_elements=['telegram_id'],
         set_=dict(
             first_name=first_name,
             last_name=last_name
