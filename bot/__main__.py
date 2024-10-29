@@ -10,7 +10,7 @@ from bot.config_reader import get_config, BotConfig, DbConfig
 from bot.db import Base
 from bot.handlers import get_routers
 from bot.middlewares import DbSessionMiddleware, TrackAllUsersMiddleware
-from bot.agrm_dialogs import add_weight_dialog
+from bot.dialogs import add_weight_dialog
 
 
 async def main():
