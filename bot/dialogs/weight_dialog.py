@@ -3,7 +3,7 @@ from aiogram_dialog.widgets.text import Const
 from aiogram_dialog.widgets.input import TextInput
 
 from . states import AddWeightSG
-from . dialogs_handlers import validate_weight, weight_correct_handler
+from . dialogs_handlers import validate_weight, weight_correct_handler, weight_error_handler
 
 
 add_weight_dialog = Dialog(
